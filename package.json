@@ -1,0 +1,22 @@
+{
+  "name": "tracalorie",
+  "version": "1.0.0",
+  "description": "practice",
+  "main": "app.js",
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "none"
+  },
+  "keywords": [
+    "noe"
+  ],
+  "author": "BFdesigns",
+  "license": "MIT"
+}
