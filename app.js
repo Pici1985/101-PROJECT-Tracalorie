@@ -1,6 +1,64 @@
 // WE ARE USING THE MODULE PATTERN
 
 //Storage controller
+const StorageCtrl = (function(){
+    // pubclis methods
+    return {
+        storeItem: function(item){
+         let items;
+
+         // check if any items in localstorage
+         if(localStorage.getItem('items') === null){
+            items = [];
+
+            //push new item
+            items.push(item);
+
+            // set localstorage
+            localStorage.setItem('items', JSON.stringify(items));
+         }else{
+            // gat data that is laready in localstorage 
+            items = JSON.parse(localStorage.getItem('items')); 
+
+            // push new item
+            items.push(item);
+
+            // reset localstorage
+            localStorage.setItem('items', JSON.stringify(items));   
+         }   
+        },
+        getItemsFromStorage: function(){
+            let items;
+            if(localStorage.getItem('items') === null){
+                items = [];
+            } else {
+                items = JSON.parse(localStorage.getItem('items'));
+            }
+            return items;    
+        },
+        updateItemStorage: function(updatedItem){
+            let items = JSON.parse(localStorage.getItem('items'));
+            items.forEach(function(item, index){
+                if(updatedItem.id === item.id){
+                    items.splice(index, 1, updatedItem)
+                }
+            });
+            localStorage.setItem('items', JSON.stringify(items));     
+        },
+        deleteItemFromStorage: function(id){
+            let items = JSON.parse(localStorage.getItem('items'));
+            items.forEach(function(item, index){
+                if(id === item.id){
+                    items.splice(index, 1);
+                }
+            });
+            localStorage.setItem('items', JSON.stringify(items));       
+        },
+        clearItemsFromStorage: function(){
+            localStorage.removeItem('items');    
+        }
+    }
+})();
 
 
 //Item controller
@@ -14,12 +72,13 @@ const ItemCtrl = (function(){
     
     // Data Structure / State
     const data = {
-        items: [
+        /* items: [
             /* {id: 0, name: 'Steak dinner', calories: 1200 },
             {id: 1, name: 'Cookie', calories: 400 },
             {id: 2, name: 'Eggs', calories: 300 },
-            {id: 3, name: 'Szar Rizzsel', calories: 500 },  */
-        ],
+            {id: 3, name: 'Szar Rizzsel', calories: 500 },  
+        ], */
+        items: StorageCtrl.getItemsFromStorage(),
         currentItem: null,
         totalCalories: 0
     }
@@ -242,7 +301,7 @@ const UICtrl = (function(){
 
 
 //App controller
-const App = (function(ItemCtrl, UICtrl){
+const App = (function(ItemCtrl, StorageCtrl, UICtrl){
     //Load eventlisteners
     const loadEventListeners = function(){
         // getUI selectors
@@ -294,6 +353,10 @@ const App = (function(ItemCtrl, UICtrl){
                 //add total calories to UI
                 UICtrl.showTotalCalories(totalCalories);
 
+                // store in localstorage
+                StorageCtrl.storeItem(newItem);
+                
+
                 // clear fields
                 UICtrl.clearInput(); 
             }
@@ -344,6 +407,9 @@ const App = (function(ItemCtrl, UICtrl){
         //add total calories to UI
         UICtrl.showTotalCalories(totalCalories);
 
+        // update localStorage
+        StorageCtrl.updateItemStorage(updatedItem);
+
         UICtrl.clearEditState();
 
         e.preventDefault();
@@ -365,6 +431,9 @@ const App = (function(ItemCtrl, UICtrl){
 
          //add total calories to UI
          UICtrl.showTotalCalories(totalCalories);
+
+         //delete from localstorage
+         StorageCtrl.deleteItemFromStorage(currentItem.id);
  
          UICtrl.clearEditState();
 
@@ -384,6 +453,9 @@ const App = (function(ItemCtrl, UICtrl){
     
        // remove from UI
        UICtrl.removeItems();
+
+       //remove from localstorage
+       StorageCtrl.clearItemsFromStorage();
 
         // hide ul
         UICtrl.hideList();
@@ -419,7 +491,7 @@ const App = (function(ItemCtrl, UICtrl){
         }
     }    
     
-})(ItemCtrl, UICtrl); 
+})(ItemCtrl, StorageCtrl, UICtrl); 
 
 
 
